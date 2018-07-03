@@ -1,0 +1,1 @@
+sed 's/>/>SH-Cluster-/g' tagged_fasta/SH-Cluster.fasta > tagged_fasta/SH-Cluster_tagged.fasta

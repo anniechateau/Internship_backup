@@ -1,0 +1,1 @@
+sed 's/>/>SH-CLC-Cluster-/g' tagged_fasta/SH-CLC-Cluster.fasta > tagged_fasta/SH-CLC-Cluster_pretagged.fasta

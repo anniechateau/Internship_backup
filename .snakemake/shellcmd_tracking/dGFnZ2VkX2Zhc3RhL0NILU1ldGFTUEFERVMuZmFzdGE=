@@ -1,0 +1,1 @@
+cp preprocessed_fasta/CH-MetaSPADES.fasta tagged_fasta/CH-MetaSPADES.fasta

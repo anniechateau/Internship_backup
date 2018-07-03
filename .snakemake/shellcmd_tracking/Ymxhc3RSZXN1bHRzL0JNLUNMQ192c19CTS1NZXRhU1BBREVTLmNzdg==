@@ -1,0 +1,1 @@
+megablast -d tagged_fasta/BM-CLC_tagged.fasta -i tagged_fasta/BM-MetaSPADES_tagged.fasta  -o blastResults/BM-CLC_vs_BM-MetaSPADES.csv -q 5 -r -4 -D 3 -a 1 -W 32 -m 8

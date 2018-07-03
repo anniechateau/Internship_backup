@@ -1,0 +1,1 @@
+formatdb -p F -i tagged_fasta/BM-MetaSPADES_tagged.fasta

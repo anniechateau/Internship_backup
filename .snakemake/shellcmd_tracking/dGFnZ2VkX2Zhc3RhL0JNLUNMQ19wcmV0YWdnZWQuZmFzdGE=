@@ -1,0 +1,1 @@
+sed 's/>/>BM-CLC-/g' tagged_fasta/BM-CLC.fasta > tagged_fasta/BM-CLC_pretagged.fasta

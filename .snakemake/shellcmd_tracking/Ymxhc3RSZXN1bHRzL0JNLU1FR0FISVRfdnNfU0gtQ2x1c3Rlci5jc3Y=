@@ -1,0 +1,1 @@
+megablast -d preprocessed_fasta/BM-MEGAHIT.fasta -i preprocessed_fasta/SH-Cluster.fasta  -o blastResults/BM-MEGAHIT_vs_SH-Cluster.csv -q 5 -r -4 -D 3 -a 1 -W 32 -m 8

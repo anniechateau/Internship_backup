@@ -1,0 +1,1 @@
+megablast -d preprocessed_fasta/SH-Cluster.fasta -i preprocessed_fasta/CH-MetaSPADES.fasta  -o blastResults/SH-Cluster_vs_CH-MetaSPADES.csv -q 5 -r -4 -D 3 -a 1 -W 32 -m 8

@@ -1,0 +1,1 @@
+sed 's/>/>BM-MetaSPADES-/g' tagged_fasta/BM-MetaSPADES.fasta > tagged_fasta/BM-MetaSPADES_pretagged.fasta

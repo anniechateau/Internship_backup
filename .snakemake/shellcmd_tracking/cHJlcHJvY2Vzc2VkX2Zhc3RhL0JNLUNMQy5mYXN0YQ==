@@ -1,0 +1,1 @@
+sed 's/	/_/g' initialFastaFiles/BM-CLC.fasta > preprocessed_fasta/BM-CLC.fasta

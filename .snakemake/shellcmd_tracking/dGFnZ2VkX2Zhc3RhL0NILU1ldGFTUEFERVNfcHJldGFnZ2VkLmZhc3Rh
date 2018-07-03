@@ -1,0 +1,1 @@
+sed 's/>/>CH-MetaSPADES-/g' tagged_fasta/CH-MetaSPADES.fasta > tagged_fasta/CH-MetaSPADES_pretagged.fasta

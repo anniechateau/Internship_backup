@@ -1,0 +1,1 @@
+sed 's/>/>BM-MEGAHIT-/g' tagged_fasta/BM-MEGAHIT.fasta > tagged_fasta/BM-MEGAHIT_pretagged.fasta

@@ -1,0 +1,1 @@
+sed 's/	/_/g' initialFastaFiles/CH-MetaSPADES.fasta > preprocessed_fasta/CH-MetaSPADES.fasta

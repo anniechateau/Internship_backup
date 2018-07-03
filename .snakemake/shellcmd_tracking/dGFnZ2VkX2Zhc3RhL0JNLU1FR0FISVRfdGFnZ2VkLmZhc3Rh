@@ -1,0 +1,1 @@
+cat tagged_fasta/BM-MEGAHIT_pretagged.fasta | seqkit fx2tab --length | awk -F "	" '{print $1"-sequence_length="$4"	"$2}' | seqkit tab2fx > tagged_fasta/BM-MEGAHIT_tagged.fasta

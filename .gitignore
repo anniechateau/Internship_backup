@@ -1,0 +1,8 @@
+blastResults/*.csv
+connectedComponents/*
+graph/*.csv
+initialFastaFiles/*.fasta
+preprocessed_fasta/*.fasta
+res/*
+selfblasts/*
+tagged_fasta/*

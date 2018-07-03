@@ -1,0 +1,1 @@
+sed 's/	/_/g' initialFastaFiles/SH-Cluster.fasta > preprocessed_fasta/SH-Cluster.fasta
