@@ -6,3 +6,4 @@ preprocessed_fasta/*.fasta
 res/*
 selfblasts/*
 tagged_fasta/*
+.snakemake/*

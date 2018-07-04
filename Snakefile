@@ -12,9 +12,11 @@ for name in SAMPLES:
 #so that snakemake knows what should be expected in the results folder.
 blastNames = []
 
-for name1 in names:
-    for name2 in names:
-        if name1 != name2:
+for i in range(0,len(names)):
+    name1 = names[i]
+    for j in range(i,len(names)):
+        name2 = names[j]
+        if (name1 != name2):
             csvName = name1 + "_vs_" + name2 + ".csv"
             blastNames.append(csvName)
 
@@ -107,9 +109,13 @@ rule formatdb:
 # Given we want to run the Megablast command for every possible combination of
 # Database and Subject in the preprocessed_fasta directory,
 # We create an anonymous snakemake rule that uses said combinations to run the megablast.
-for A in names:
-    for B in names:
+for i in range(0,len(names)):
+    A = names[i]
+    for j in range(i,len(names)):
+        B = names[j]
         if (A != B):
+
+
             # use of an anonymous rule to avoid problems when rerunning the rule
             # for each blast of A vs B.
             rule :
@@ -145,7 +151,3 @@ rule Filter_Blast_Results:
         # AND E.Val < 1*10^-15
         #"awk '/^[^#]/ {{if ( (substr($1,index($1,\"sequence_length=\")+16) / (substr($2,index($2,\"sequence_length=\")+16))) < 1.5 || (substr($1,index($1,\"sequence_length=\")+16) / (substr($2,index($2,\"sequence_length=\")+16))) > 0.5 && $4/(substr($1,index($1,\"sequence_length=\")+16)) > 0.75 && $3 > 95 && $11 < 0.000000000000001) print $0}}' {input} > {output}"
         "./scripts/blastFilter.awk {input}"
-# add part about Inclusions
-
-## rewrite this awk command as an .awk script that does the inclusion/complete filtering In One Go.
-## Have it need external parameters to decide on values !!!!

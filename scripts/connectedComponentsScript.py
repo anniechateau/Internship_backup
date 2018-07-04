@@ -34,7 +34,10 @@ G0 = nx.Graph()
 
 x = set()
 
-with open("./graph/complete.csv","rb") as blastFile:
+complete = "./graph/complete.csv"
+inclusions = "./graph/inclusions.csv"
+
+with open(complete,"rb") as blastFile:
     for comparison in blastFile:
         # get the two node names, keeping the common stats separated
         # to be reused as edge information later on.
@@ -66,7 +69,7 @@ with open("./graph/complete.csv","rb") as blastFile:
         id,cov = edgeMetadata[0:2]
         eval,bitsc =edgeMetadata[8:11]
 
-        G0.add_edge(seqAName,seqBName,attr_dict={"Identity%":float(id),"Coverage": int(cov),"e-value": float(eval),"bitscore": float(bitsc)})
+        G0.add_edge(seqAName,seqBName,attr_dict={"Identity":float(id),"Coverage": int(cov),"e-value": float(eval),"bitscore": float(bitsc)})
 
 
 
@@ -87,20 +90,155 @@ print("Writing Dot files for each Connected Components")
 for i in range(0,len(graphs)):
     print("processing connected component #" + str(i) + "\n")
     write_dot(graphs[i], "connectedComponents/ConnectedComponent%03d.dot" % i )
-    #print("\nSet positions for graph#" + str(i) + "\n")
-    ## !!! I need to study which layout is best !!!
-    pos = nx.spring_layout(graphs[i])
 
-    #print("Draw graph #"+str(i)+"\n")
-    drawn = nx.draw(graphs[i], pos)
-    #print("setting edge and node labels for graph #" + str(i) + "\n")
-    node_labels = nx.get_node_attributes(graphs[i],'Team')
-    nx.draw_networkx_labels(graphs[i], pos, labels = node_labels)
-    #edge_labels = nx.get_edge_attributes(graphs[i],'Identity%')
-    #nx.draw_networkx_edge_labels(graphs[i], pos, labels = edge_labels)
+    lens = nx.get_node_attributes(graphs[i],"Length").values()
+    uniqueTeams = set(nx.get_node_attributes(graphs[i],"Team").values())
 
-    plt.savefig("connectedComponents/ConnectedComponent%03d.png" % i)
-    plt.close()
+
+
+
+    if len(lens) < 15:
+
+
+        #print("\nSet positions for graph#" + str(i) + "\n")
+        ## !!! I need to study which layout is best !!!
+        pos = nx.spring_layout(graphs[i])
+
+        #print("Draw graph #"+str(i)+"\n")
+        drawn = nx.draw(graphs[i], pos)
+        #print("setting edge and node labels for graph #" + str(i) + "\n")
+        labels_node = nx.get_node_attributes(graphs[i],'Team')
+        nx.draw_networkx_labels(graphs[i], pos, labels = labels_node)
+        labels_edge = nx.get_edge_attributes(graphs[i],'Identity')
+        nx.draw_networkx_edge_labels(graphs[i], pos, labels_edge)
+
+        plt.savefig("connectedComponents/ConnectedComponent%03d.png" % i)
+        plt.close()
+    else:
+        print("skipping visualization, too many nodes\n")
+
+
+
+
+    print("Average length of graph #" + str(i)  + " : " + str(sum(lens)/len(lens)))
+    print("\nNumber of teams represented in this graph: " + str(len(uniqueTeams)))
+    print("\nTeams represented in this graph: " + str(uniqueTeams))
+
+
+
+
+
+
+
+
+
+
+#######  INCLUSIONS  #######
+
+with open(inclusions,"rb") as blastFile:
+    for comparison in blastFile:
+        # get the two node names, keeping the common stats separated
+        # to be reused as edge information later on.
+        seqAInfo, seqBInfo ,edge_info = comparison.split("\t",2)
+        # get ind. sequence information from sequence identifiers:
+        seqAName, seqALen,seqATeam = seqInfoExtractor(seqAInfo)
+        seqBName, seqBLen,seqBTeam = seqInfoExtractor(seqBInfo)
+
+
+
+
+        # add sequences as nodes by their names (W/O team and length)
+        # nodes being a set, there's no need to check for repeat elements
+        G0.add_node(seqAName)
+
+        G0.add_node(seqBName)
+
+        # Add associated data to each node
+        G0.node[seqAName]["Team"]   = seqATeam
+        G0.node[seqAName]["Length"] = seqALen
+
+        G0.node[seqBName]["Team"]   = seqBTeam
+        G0.node[seqBName]["Length"] = seqBLen
+
+        if seqBlen > seqAlen:
+                G0.node[seqAName]["Type"] = "inclusion"
+                G0.node[seqBName]["Type"] = "main"
+
+
+
+        # add edge information
+
+        # extract edge info we want to keep (% ident, coverage, e-val, bitscore)
+        edgeMetadata = edge_info.strip("\n").split("\t")
+        id,cov = edgeMetadata[0:2]
+        eval,bitsc =edgeMetadata[8:11]
+
+        G0.add_edge(seqAName,seqBName,attr_dict={"Identity":float(id),"Coverage": int(cov),"e-value": float(eval),"bitscore": float(bitsc)})
+
+
+
+
+# Create subgraphs for each connected component, representing a set of sequences
+# identified as equal.
+
+graphs = list(nx.connected_component_subgraphs(G0, copy=True))
+
+
+print("Writing Dot files for each Connected Components")
+
+# Write each connected component in separate DOT files.
+
+
+#for every graph in the connected components list:
+
+for i in range(0,len(graphs)):
+    print("processing connected component #" + str(i) + "\n")
+    write_dot(graphs[i], "connectedComponents/ConnectedComponent%03d.dot" % i )
+
+    lens = nx.get_node_attributes(graphs[i],"Length").values()
+    uniqueTeams = set(nx.get_node_attributes(graphs[i],"Team").values())
+
+
+
+
+    if len(lens) < 15:
+
+
+        #print("\nSet positions for graph#" + str(i) + "\n")
+        ## !!! I need to study which layout is best !!!
+        pos = nx.spring_layout(graphs[i])
+
+        #print("Draw graph #"+str(i)+"\n")
+        drawn = nx.draw(graphs[i], pos)
+        #print("setting edge and node labels for graph #" + str(i) + "\n")
+        labels_node = nx.get_node_attributes(graphs[i],'Team')
+        nx.draw_networkx_labels(graphs[i], pos, labels = labels_node)
+        labels_edge = nx.get_edge_attributes(graphs[i],'Identity')
+        nx.draw_networkx_edge_labels(graphs[i], pos, labels_edge)
+
+        plt.savefig("connectedComponents/ConnectedComponent%03d.png" % i)
+        plt.close()
+    else:
+        print("skipping visualization, too many nodes\n")
+
+
+
+
+    print("Average length of graph #" + str(i)  + " : " + str(sum(lens)/len(lens)))
+    print("\nNumber of teams represented in this graph: " + str(len(uniqueTeams)))
+    print("\nTeams represented in this graph: " + str(uniqueTeams))
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
