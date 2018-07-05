@@ -24,15 +24,10 @@ def seqInfoExtractor(seq):
     return seqName,int(seqLen),seqTeam
 
 
-
-
-node_List = []
-
+######## COMPLETES ###########
 
 
 G0 = nx.Graph()
-
-x = set()
 
 complete = "./graph/complete.csv"
 inclusions = "./graph/inclusions.csv"
@@ -69,7 +64,7 @@ with open(complete,"rb") as blastFile:
         id,cov = edgeMetadata[0:2]
         eval,bitsc =edgeMetadata[8:11]
 
-        G0.add_edge(seqAName,seqBName,attr_dict={"Identity":float(id),"Coverage": int(cov),"e-value": float(eval),"bitscore": float(bitsc)})
+        G0.add_edge(seqAName,seqBName,Identity=float(id),Coverage = int(cov),e_value = float(eval),bitscore= float(bitsc))
 
 
 
@@ -80,7 +75,7 @@ with open(complete,"rb") as blastFile:
 graphs = list(nx.connected_component_subgraphs(G0, copy=True))
 
 
-print("Writing Dot files for each Connected Components")
+print("Writing Dot files for each Connected Components -- Complete\n")
 
 # Write each connected component in separate DOT files.
 
@@ -88,8 +83,8 @@ print("Writing Dot files for each Connected Components")
 #for every graph in the connected components list:
 
 for i in range(0,len(graphs)):
-    print("processing connected component #" + str(i) + "\n")
-    write_dot(graphs[i], "connectedComponents/ConnectedComponent%03d.dot" % i )
+    print("processing connected complete component #" + str(i) + "\n")
+    write_dot(graphs[i], "connectedComponents/complete/ConnectedComponent%03d.dot" % i )
 
     lens = nx.get_node_attributes(graphs[i],"Length").values()
     uniqueTeams = set(nx.get_node_attributes(graphs[i],"Team").values())
@@ -112,7 +107,7 @@ for i in range(0,len(graphs)):
         labels_edge = nx.get_edge_attributes(graphs[i],'Identity')
         nx.draw_networkx_edge_labels(graphs[i], pos, labels_edge)
 
-        plt.savefig("connectedComponents/ConnectedComponent%03d.png" % i)
+        plt.savefig("connectedComponents/complete/ConnectedComponent%03d.png" % i)
         plt.close()
     else:
         print("skipping visualization, too many nodes\n")
@@ -134,6 +129,10 @@ for i in range(0,len(graphs)):
 
 
 #######  INCLUSIONS  #######
+
+G0.clear()
+G0 = nx.DiGraph()
+
 
 with open(inclusions,"rb") as blastFile:
     for comparison in blastFile:
@@ -160,9 +159,16 @@ with open(inclusions,"rb") as blastFile:
         G0.node[seqBName]["Team"]   = seqBTeam
         G0.node[seqBName]["Length"] = seqBLen
 
-        if seqBlen > seqAlen:
-                G0.node[seqAName]["Type"] = "inclusion"
-                G0.node[seqBName]["Type"] = "main"
+        if seqBLen > seqALen:
+            G0.node[seqAName]["Type"] = "inclusion"
+            incl  = seqAName
+            G0.node[seqBName]["Type"] = "main"
+            main = seqBName
+        else:
+            G0.node[seqBName]["Type"] = "inclusion"
+            incl  = seqAName
+            G0.node[seqAName]["Type"] = "main"
+            main = seqAName
 
 
 
@@ -173,8 +179,7 @@ with open(inclusions,"rb") as blastFile:
         id,cov = edgeMetadata[0:2]
         eval,bitsc =edgeMetadata[8:11]
 
-        G0.add_edge(seqAName,seqBName,attr_dict={"Identity":float(id),"Coverage": int(cov),"e-value": float(eval),"bitscore": float(bitsc)})
-
+        G0.add_edge(incl,main,Identity=float(id),Coverage = int(cov),e_value = float(eval),bitscore= float(bitsc))
 
 
 
@@ -184,7 +189,7 @@ with open(inclusions,"rb") as blastFile:
 graphs = list(nx.connected_component_subgraphs(G0, copy=True))
 
 
-print("Writing Dot files for each Connected Components")
+print("Writing Dot files for each Connected Components -- Inclusions\n")
 
 # Write each connected component in separate DOT files.
 
@@ -192,8 +197,8 @@ print("Writing Dot files for each Connected Components")
 #for every graph in the connected components list:
 
 for i in range(0,len(graphs)):
-    print("processing connected component #" + str(i) + "\n")
-    write_dot(graphs[i], "connectedComponents/ConnectedComponent%03d.dot" % i )
+    print("processing connected inclusion component #" + str(i) + "\n")
+    write_dot(graphs[i], "connectedComponents/inclusions/ConnectedComponent%03d.dot" % i )
 
     lens = nx.get_node_attributes(graphs[i],"Length").values()
     uniqueTeams = set(nx.get_node_attributes(graphs[i],"Team").values())
@@ -201,7 +206,7 @@ for i in range(0,len(graphs)):
 
 
 
-    if len(lens) < 15:
+    if len(lens) < 25:
 
 
         #print("\nSet positions for graph#" + str(i) + "\n")
@@ -216,7 +221,7 @@ for i in range(0,len(graphs)):
         labels_edge = nx.get_edge_attributes(graphs[i],'Identity')
         nx.draw_networkx_edge_labels(graphs[i], pos, labels_edge)
 
-        plt.savefig("connectedComponents/ConnectedComponent%03d.png" % i)
+        plt.savefig("connectedComponents/inclusions/ConnectedComponent%03d.png" % i)
         plt.close()
     else:
         print("skipping visualization, too many nodes\n")
