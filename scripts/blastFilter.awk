@@ -18,7 +18,7 @@ BEGIN {
 
 /^[^#]/ {
   total++;
-  if ( $4/(substr($1,index($1,"sequence_length=")+16)) > 0.75 && $3 > 95 && $11 < 0.000000000000001) {
+  if ( $4/(substr($1,index($1,"sequence_length=")+16)) > 0.95 && $3 > 95 && $11 < 0.000000000000001) {
     if ((substr($1,index($1,"sequence_length=")+16) / (substr($2,index($2,"sequence_length=")+16))) < 1.5 && (substr($1,index($1,"sequence_length=")+16) / (substr($2,index($2,"sequence_length=")+16))) > 0.5) {
         print $0 >> "graph/complete.csv";
         complete++;
