@@ -1,6 +1,6 @@
 blastResults/*.csv
-connectedComponents/*
-graph/*.csv
+connectedComponents*/*
+graph*/*.csv
 initialFastaFiles/*.fasta
 preprocessed_fasta/*.fasta
 res/*
