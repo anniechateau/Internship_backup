@@ -2,41 +2,40 @@
 library("ggplot2")
 library("readr")
 
-setwd("~/Desktop/Results/Raw_results_data_all_teams/blastResults")
+setwd("./../blastResults")
 
 frequencyAnalysisPlots <- function(blastOutput){
 
 csvFile <- read_table2(blastOutput,
-                                col_names = FALSE, 
+                                col_names = FALSE,
                                 comment = "#")
 
 
 
 
-names(csvFile) <- c("Query_id", 
-                            "Subject_id", 
-                            "%_identity", 
-                            "alignment_length", 
+names(csvFile) <- c("Query_id",
+                            "Subject_id",
+                            "%_identity",
+                            "alignment_length",
                             "mismatches",
-                            "gap_openings", 
-                            "q.start", 
-                            "q.end", 
-                            "s.start", 
-                            "s.end", 
+                            "gap_openings",
+                            "q.start",
+                            "q.end",
+                            "s.start",
+                            "s.end",
                             "e-value",
                             "bit_score")
 
 # I need to filter out matches between identical contigs to remove
 # the biggest 100% coverage hits, or this comparison is meaningless.
-# given that I alreayd KNOW two identical sequences 
+# given that I alreayd KNOW two identical sequences
 # will be... identical.
 
 # gets rids of all fully identical of Seq A vs Seq A, etc...
 csvFile2 <- csvFile[csvFile$Query_id != csvFile$Subject_id,]
 
 
-filepath = paste("~/Desktop/Rdata/", blastOutput, ".png", sep="")
-print(filepath)
+filepath = paste("./../Rdata/", blastOutput, ".png", sep="")
 
 
 png(filename= filepath)
@@ -58,7 +57,7 @@ dev.off()
 
 
 # save the result of the summary function a textfile
-sumFile <- paste("~/Desktop/Rdata/", blastOutput, "_summary.txt")
+sumFile <- paste("./../Rdata/", blastOutput, "_summary.txt")
 
 sink(sumFile)
 print(summary(csvFile2))
@@ -72,11 +71,3 @@ list <- list.files(path = getwd())  # list.files(path = getwd(), pattern= '(.*)_
 for(i in seq_along(list)){
   frequencyAnalysisPlots(list[i])
 }
-
-
-
-
-
-
-
-#CLC_CLC_perfect_coverage = BM_CLC_vs_BM_CLC[BM_CLC_vs_BM_CLC$`%_identity` == "100",]

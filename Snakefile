@@ -151,3 +151,17 @@ rule Filter_Blast_Results:
         # AND E.Val < 1*10^-15
         #"awk '/^[^#]/ {{if ( (substr($1,index($1,\"sequence_length=\")+16) / (substr($2,index($2,\"sequence_length=\")+16))) < 1.5 || (substr($1,index($1,\"sequence_length=\")+16) / (substr($2,index($2,\"sequence_length=\")+16))) > 0.5 && $4/(substr($1,index($1,\"sequence_length=\")+16)) > 0.75 && $3 > 95 && $11 < 0.000000000000001) print $0}}' {input} > {output}"
         "./scripts/blastFilter.awk {input}"
+
+
+
+# new rule to execute the Graph generation and analysis process
+rule graphProcess:
+    input:
+        "graph/complete.csv"
+        "graph/inclusions.csv"
+    output:
+        "graph_step.txt"
+
+    shell:
+        "python ./scripts/connectedComponentsScript.py"
+        "touch graph_step.txt"

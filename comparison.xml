@@ -6,8 +6,8 @@
   <BlastOutput_reference>Stephen F. Altschul, Thomas L. Madden, Alejandro A. Sch&amp;auml;ffer, Jinghui Zhang, Zheng Zhang, Webb Miller, and David J. Lipman (1997), &quot;Gapped BLAST and PSI-BLAST: a new generation of protein database search programs&quot;, Nucleic Acids Res. 25:3389-3402.</BlastOutput_reference>
   <BlastOutput_db></BlastOutput_db>
   <BlastOutput_query-ID>Query_1</BlastOutput_query-ID>
-  <BlastOutput_query-def>BM-MetaSPADES-VP17-Midoux-SPADES_contig_2251_reads=15-sequence_length=542</BlastOutput_query-def>
-  <BlastOutput_query-len>542</BlastOutput_query-len>
+  <BlastOutput_query-def>CH-MetaSPADES-NODE_32717_length_78_cov_1188.000000-sequence_length=78</BlastOutput_query-def>
+  <BlastOutput_query-len>78</BlastOutput_query-len>
   <BlastOutput_param>
     <Parameters>
       <Parameters_matrix>BLOSUM62</Parameters_matrix>
@@ -21,16 +21,16 @@
 <Iteration>
   <Iteration_iter-num>1</Iteration_iter-num>
   <Iteration_query-ID>Query_1</Iteration_query-ID>
-  <Iteration_query-def>BM-MetaSPADES-VP17-Midoux-SPADES_contig_2251_reads=15-sequence_length=542</Iteration_query-def>
-  <Iteration_query-len>542</Iteration_query-len>
+  <Iteration_query-def>CH-MetaSPADES-NODE_32717_length_78_cov_1188.000000-sequence_length=78</Iteration_query-def>
+  <Iteration_query-len>78</Iteration_query-len>
 <Iteration_hits>
 </Iteration_hits>
   <Iteration_stat>
     <Statistics>
       <Statistics_db-num>0</Statistics_db-num>
       <Statistics_db-len>0</Statistics_db-len>
-      <Statistics_hsp-len>40</Statistics_hsp-len>
-      <Statistics_eff-space>507522</Statistics_eff-space>
+      <Statistics_hsp-len>7</Statistics_hsp-len>
+      <Statistics_eff-space>5112</Statistics_eff-space>
       <Statistics_kappa>0.041</Statistics_kappa>
       <Statistics_lambda>0.267</Statistics_lambda>
       <Statistics_entropy>0.14</Statistics_entropy>

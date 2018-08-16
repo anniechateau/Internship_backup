@@ -7,3 +7,4 @@ res/*
 selfblasts/*
 tagged_fasta/*
 .snakemake/*
+*.fasta

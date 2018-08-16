@@ -189,6 +189,7 @@ def drawGraph(subgraph,outputDir,id):
     labels_node = nx.get_node_attributes(subgraph,'Team')
     nx.draw_networkx_labels(subgraph, pos, labels = labels_node)
     labels_edge = nx.get_edge_attributes(subgraph,'Identity')
+
     nx.draw_networkx_edge_labels(subgraph, pos, labels_edge)
 
     plt.savefig(outputDir + "/"  + id + ".png")
@@ -247,18 +248,22 @@ def addEdgesToSubgraph(subgraph,fastaDir):
     # find every unique 2-tuple combination of nodes in the subgraph.
 
     # adds an edge between all combinations U,V that do not already posses one,
-    # using Blast to calculate the identity % to display.
+    # using Blast to get the informtion necessary to establish the clique.
     # Essentially completing the subgraph and making it a Clique.
+    # (if a valid alignment is available between the two entities, of course)
     combinationsList = [[u,v] for u,v in combinations(subgraph.nodes, 2)]
+
     for u,v in combinationsList:
         if not nodes_connected(subgraph,u,v):
             blast_result_record = blast(u,v,fastaDir)
-            print(blast_result_record)
-            #id = result["identity"]
-            #cov = result["coverage"]
-            #eval = result["e_value"]
-            #bitsc = result["bitscore"]
-            #subgraph.add_edge(u,v,Identity=float(id),Coverage = int(cov),e_value = float(eval),bitscore= float(bitsc))
+            for query in blast_result_record:
+                for alignment in query.alignments:
+                    for hsp in alignment.hsps:
+                        id = float(hsp.identities) / float(hsp.align_length)
+                        cov = float(hsp.align_length) / float(query.query_length)
+                        eval = hsp.expect
+                        bitsc = hsp.score
+                        subgraph.add_edge(u,v,Identity=float(id),Coverage = int(cov),e_value = float(eval),bitscore= float(bitsc))
 
 
 
@@ -398,7 +403,10 @@ def processCompleteSubgraphs(graphs,teams,outputDir,fastaDir):
             write_dot(graphs[i], outputDir + "/notclique/" + id + ".dot")
             # do a BLAST of the nodes that aren't connected to each other,
             # and save the result in a new DOT file, as well as create a new image of it.
+            drawGraph(graphs[i],outputDir + "/notclique/",id + "_before")
             addEdgesToSubgraph(graphs[i],fastaDir)
+            drawGraph(graphs[i],outputDir + "/notclique/",id + "_after")
+
 
         if len(lenGraph) > 5:
             createDir(outputDir + "/highSeqCount")
