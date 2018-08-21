@@ -37,7 +37,8 @@ rule all:
         expand("blastResults/{BLASTNAMES}",BLASTNAMES=blastNames),
         #"graph/filteredComplete.csv"
         "graph/complete.csv",
-        "graph/inclusions.csv"
+        "graph/inclusions.csv",
+        "graph_step.txt"
     message:
         "Checking that all final output files exist.\n"
 
@@ -157,11 +158,9 @@ rule Filter_Blast_Results:
 # new rule to execute the Graph generation and analysis process
 rule graphProcess:
     input:
-        "graph/complete.csv"
+        "graph/complete.csv",
         "graph/inclusions.csv"
     output:
         "graph_step.txt"
-
     shell:
-        "python ./scripts/connectedComponentsScript.py"
-        "touch graph_step.txt"
+        "python ./scripts/connectedComponentsScript.py;touch graph_step.txt"

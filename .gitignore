@@ -8,3 +8,4 @@ selfblasts/*
 tagged_fasta/*
 .snakemake/*
 *.fasta
+grap_step.txt

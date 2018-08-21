@@ -319,16 +319,17 @@ def processInclusionSubgraps(graphs,teams, inclusionDir,fastaDir):
         ## plus another folder for those that have more than 5 sequences in them.
 
         if cliqueBol != True:
-
-            # make dirs if they don't exist
             createDir(inclusionDir + "/notClique/")
 
-            write_dot(graphs[i], (inclusionDir +"/notClique/" + id + "_before.dot") )
+            if len(lenGraph) > 5:
+                pass
+            else:
+                write_dot(graphs[i], (inclusionDir +"/notClique/" + id + "_before.dot") )
 
 
-            addEdgesToSubgraph(graphs[i],fastaDir)
+                addEdgesToSubgraph(graphs[i],fastaDir)
 
-            write_dot(graphs[i], (inclusionDir +"/notClique/" + id + "_after.dot") )
+                write_dot(graphs[i], (inclusionDir +"/notClique/" + id + "_after.dot") )
 
 
         if len(lenGraph) > 5:
@@ -400,12 +401,19 @@ def processCompleteSubgraphs(graphs,teams,outputDir,fastaDir):
         ## plus another folder for those that have more than 5 sequences in them.
         if cliqueBol != True:
             createDir(outputDir + "/notclique")
-            write_dot(graphs[i], outputDir + "/notclique/" + id + ".dot")
-            # do a BLAST of the nodes that aren't connected to each other,
-            # and save the result in a new DOT file, as well as create a new image of it.
-            drawGraph(graphs[i],outputDir + "/notclique/",id + "_before")
-            addEdgesToSubgraph(graphs[i],fastaDir)
-            drawGraph(graphs[i],outputDir + "/notclique/",id + "_after")
+
+
+            if len(lenGraph) > 5:
+                # we only want to do this if there are not more than 5 different sequences,
+                # given the subgraphs with 10+ sequences are never going to be cliques,
+                pass
+            else:
+                write_dot(graphs[i], outputDir + "/notclique/" + id + ".dot")
+                # do a BLAST of the nodes that aren't connected to each other,
+                # and save the result in a new DOT file, as well as create a new image of it.
+                drawGraph(graphs[i],outputDir + "/notclique/",id + "_before")
+                addEdgesToSubgraph(graphs[i],fastaDir)
+                drawGraph(graphs[i],outputDir + "/notclique/",id + "_after")
 
 
         if len(lenGraph) > 5:
