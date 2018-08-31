@@ -270,7 +270,7 @@ def addEdgesToSubgraph(subgraph,fastaDir):
 
 
 
-def processInclusionSubgraps(graphs,teams, inclusionDir,fastaDir):
+def processInclusionSubgraps(graphs,teams, inclusionDir,fastaDir,statFile):
     for i in range(0,len(graphs)):
         print("processing connected inclusion component #" + str(i) + "\n")
         id = "connectedComponent%04d" % i
@@ -299,9 +299,7 @@ def processInclusionSubgraps(graphs,teams, inclusionDir,fastaDir):
         maxBitscore = max(bitscores)
         minBitscore = min(bitscores)
 
-        #statsHeader = "component;num.Nodes;num.Edges;avg.length;avg.Score;minimal.Score;maximal.Score;Clique\n"
-        stats = [str(id), str(len(graphs[i].nodes)), str(len(graphs[i].edges)), str(sum(lenGraph)/len(lenGraph)), str(avgBitscore), str(minBitscore), str(maxBitscore), str(cliqueBol)]
-        statWriter(upsetstats,stats)
+
 
 
 
@@ -318,19 +316,43 @@ def processInclusionSubgraps(graphs,teams, inclusionDir,fastaDir):
         ## keep a sub-folder for copies of connected components that are not cliques
         ## plus another folder for those that have more than 5 sequences in them.
 
+
+        #statsHeader = "component;num.Nodes;num.Edges;avg.length;avg.Score;minimal.Score;maximal.Score;Clique\n"
+        stats = [str(id), str(len(graphs[i].nodes)), str(len(graphs[i].edges)), str(sum(lenGraph)/len(lenGraph)), str(avgBitscore), str(minBitscore), str(maxBitscore), str(cliqueBol)]
+
+
         if cliqueBol != True:
             createDir(inclusionDir + "/notClique/")
 
             if len(lenGraph) > 5:
                 pass
+                statWriter(statFile,stats) # write the stats for that big non-clique anyway
             else:
+                # creating an entry with _before and _after will let me filter
+                # out by "_before" if I want the stats for after the adjustment,
+                # and by "_after" if I want them before the non-cliques were modified.
+                stats = [str(id + "_before"), str(len(graphs[i].nodes)), str(len(graphs[i].edges)), str(sum(lenGraph)/len(lenGraph)), str(avgBitscore), str(minBitscore), str(maxBitscore), str(cliqueBol)]
+                statWriter(statFile,stats)
                 write_dot(graphs[i], (inclusionDir +"/notClique/" + id + "_before.dot") )
 
 
                 addEdgesToSubgraph(graphs[i],fastaDir)
 
+                # update values
+                bitscores = nx.get_edge_attributes(graphs[i],"bitscore").values()
+                coverage  = nx.get_edge_attributes(graphs[i],"coverage").values()
+
+                avgBitscore = sum(bitscores) / len(bitscores)
+                maxBitscore = max(bitscores)
+                minBitscore = min(bitscores)
+
+                stats = [str(id+ "_after"), str(len(graphs[i].nodes)), str(len(graphs[i].edges)), str(sum(lenGraph)/len(lenGraph)), str(avgBitscore), str(minBitscore), str(maxBitscore), str(cliqueBol)]
+                statWriter(statFile,stats)
                 write_dot(graphs[i], (inclusionDir +"/notClique/" + id + "_after.dot") )
 
+        else:
+            statWriter(statFile,stats)
+            # write the stats for the clique
 
         if len(lenGraph) > 5:
 
@@ -338,20 +360,21 @@ def processInclusionSubgraps(graphs,teams, inclusionDir,fastaDir):
             createDir(inclusionDir + "/highSeqCount/")
 
             write_dot(graphs[i], (inclusionDir +"/highSeqCount/" + id + ".dot") )
+            stats = [str(id), str(len(graphs[i].nodes)), str(len(graphs[i].edges)), str(sum(lenGraph)/len(lenGraph)), str(avgBitscore), str(minBitscore), str(maxBitscore), str(cliqueBol)]
+            statWriter(statFile,stats)
 
 
 
+        #print("Average length of graph #" + str(i)  + " : " + str(sum(lenGraph)/len(lenGraph)))
+        #print("\nNumber of teams represented in this graph: " + str(len(uniqueTeams)))
+        #print("\nTeams represented in this graph: " + str(uniqueTeams))
 
-        print("Average length of graph #" + str(i)  + " : " + str(sum(lenGraph)/len(lenGraph)))
-        print("\nNumber of teams represented in this graph: " + str(len(uniqueTeams)))
-        print("\nTeams represented in this graph: " + str(uniqueTeams))
 
-
-    print("# of connected components " + str(len(graphs)) + "\n")
+    print("\n\n# of connected components " + str(len(graphs)) + "\n")
     #print("# of cliques " + str(cliques) + "\n")
 
 
-def processCompleteSubgraphs(graphs,teams,outputDir,fastaDir):
+def processCompleteSubgraphs(graphs,teams,outputDir,fastaDir,statFile):
 
     for i in range(0,len(graphs)):
         print("processing connected complete component #" + str(i) + "\n")
@@ -382,8 +405,7 @@ def processCompleteSubgraphs(graphs,teams,outputDir,fastaDir):
         minBitscore = min(bitscores)
 
         #statsHeader = "component;num.Nodes;num.Edges;avg.length;avg.Score;minimal.Score;maximal.Score;Clique\n"
-        stats = [str(id), str(len(graphs[i].nodes)), str(len(graphs[i].edges)), str(sum(lenGraph)/len(lenGraph)), str(avgBitscore), str(minBitscore), str(maxBitscore), str(cliqueBol)]
-        statWriter(upsetstats,stats)
+
 
 
 
@@ -412,25 +434,45 @@ def processCompleteSubgraphs(graphs,teams,outputDir,fastaDir):
                 # do a BLAST of the nodes that aren't connected to each other,
                 # and save the result in a new DOT file, as well as create a new image of it.
                 drawGraph(graphs[i],outputDir + "/notclique/",id + "_before")
+                stats = [str(id + "_before"), str(len(graphs[i].nodes)), str(len(graphs[i].edges)), str(sum(lenGraph)/len(lenGraph)), str(avgBitscore), str(minBitscore), str(maxBitscore), str(cliqueBol)]
+
+                statWriter(statFile,stats)
+
+
                 addEdgesToSubgraph(graphs[i],fastaDir)
+                # update values
+                bitscores = nx.get_edge_attributes(graphs[i],"bitscore").values()
+                coverage  = nx.get_edge_attributes(graphs[i],"coverage").values()
+
+                avgBitscore = sum(bitscores) / len(bitscores)
+                maxBitscore = max(bitscores)
+                minBitscore = min(bitscores)
                 drawGraph(graphs[i],outputDir + "/notclique/",id + "_after")
 
+                cliqueBol = graphs[i].number_of_edges() == ((n * (n - 1 ) ) / 2)
+                stats = [str(id + "_after"), str(len(graphs[i].nodes)), str(len(graphs[i].edges)), str(sum(lenGraph)/len(lenGraph)), str(avgBitscore), str(minBitscore), str(maxBitscore), str(cliqueBol)]
+                statWriter(statFile,stats)
+        else:
+            stats = [str(id), str(len(graphs[i].nodes)), str(len(graphs[i].edges)), str(sum(lenGraph)/len(lenGraph)), str(avgBitscore), str(minBitscore), str(maxBitscore), str(cliqueBol)]
+            statWriter(statFile,stats)
 
         if len(lenGraph) > 5:
             createDir(outputDir + "/highSeqCount")
             write_dot(graphs[i], (outputDir + "/highSeqCount/" + id + ".dot" ))
+            stats = [str(id), str(len(graphs[i].nodes)), str(len(graphs[i].edges)), str(sum(lenGraph)/len(lenGraph)), str(avgBitscore), str(minBitscore), str(maxBitscore), str(cliqueBol)]
+            statWriter(statFile,stats)
 
 
 
 
 
-        print("\nAverage length of graph #" + str(i)  + " : " + str(sum(lenGraph)/len(lenGraph)))
-        print("\nNumber of teams represented in this graph: " + str(len(cur_Teams)))
-        print("\nTeams represented in this graph: " + str(cur_Teams))
+        #print("\nAverage length of graph #" + str(i)  + " : " + str(sum(lenGraph)/len(lenGraph)))
+        #print("\nNumber of teams represented in this graph: " + str(len(cur_Teams)))
+        #print("\nTeams represented in this graph: " + str(cur_Teams))
 
 
 
-    print("# of connected components " + str(len(graphs)) + "\n")
+    print("\n\n# of connected components " + str(len(graphs)) + "\n")
     #print("# of cliques " + str(cliques) + "\n")
 
 
@@ -481,21 +523,21 @@ writeHeader(upsetFile,header)
 
 # write header of Statistics file:
 
-upsetstats = "connectedComponents/statsComplete.csv"
+completeStats = "connectedComponents/statsComplete.csv"
 statsHeader = "component;num.Nodes;num.Edges;avg.length;avg.Score;minimal.Score;maximal.Score;Clique\n"
-writeHeader(upsetstats,statsHeader)
+writeHeader(completeStats,statsHeader)
 
 
 
 # number of connected components (including non-cliques)
 numberOfConnectedComponents_complete = len(graphs)
 
-print("Writing Dot files for each Connected Components -- Complete\n")
+print("\n\nWriting Dot files for each Connected Components -- Complete\n\n")
 
 # Write each connected component in separate DOT files.
 #for every graph in the connected components list:
 
-processCompleteSubgraphs(graphs,teams,outputDir,fastaDir)
+processCompleteSubgraphs(graphs,teams,outputDir,fastaDir,completeStats)
 
 
 
@@ -538,18 +580,19 @@ print("Writing Dot files for each Connected Components -- Inclusions\n")
 #create first line of UpSet data file
 teams = set(nx.get_node_attributes(G0,"Team").values())
 
+upsetstats = "connectedComponents/statsComplete.csv"
 upsetFile = "connectedComponents/upsetDataInclusions.csv"
 header = "Row;" + ";".join(teams) + "\n"
 writeHeader(upsetFile,header)
 
 
 # write stats statsHeader
-statFile = "connectedComponents/inclusionsStats.csv"
+inclusionStats = "connectedComponents/inclusionsStats.csv"
 header = "component;num.Nodes;num.Edges;avg.length;avg.Score;minimal.Score;maximal.Score;Clique\n"
 # adjust stats for inclusions specific charaters
-writeHeader(statFile,header)
+writeHeader(inclusionStats,header)
 
 
 #for every graph in the connected components list:
 
-processInclusionSubgraps(graphs,teams,inclusionDir,fastaDir)
+processInclusionSubgraps(graphs,teams,inclusionDir,fastaDir,inclusionStats)

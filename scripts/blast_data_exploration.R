@@ -2,7 +2,13 @@
 library("ggplot2")
 library("readr")
 
-setwd("./../blastResults")
+
+#change this to the relative path to the blastResults folder in your own implementation of the project !!!
+setwd("~/Desktop/Results/Raw_results_data_all_teams/blastResults")
+
+dir.create("./../Rdata")
+
+
 
 frequencyAnalysisPlots <- function(blastOutput){
 
@@ -54,7 +60,6 @@ title(blastOutput, outer=TRUE)
 
 # closes off the png file.
 dev.off()
-
 
 # save the result of the summary function a textfile
 sumFile <- paste("./../Rdata/", blastOutput, "_summary.txt")
